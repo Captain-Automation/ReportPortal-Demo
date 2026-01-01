@@ -1,0 +1,36 @@
+name: Run Automated Tests
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore TlvWebSite/TlvWebSite.csproj
+
+    - name: Build
+      run: dotnet build TlvWebSite/TlvWebSite.csproj --no-restore
+
+    - name: Test
+      env:
+        # ReportPortal will automatically pick up this environment variable
+        # Note: ReportPortal.Json config keys can be overridden by env vars with "ReportPortal_" prefix
+        # format: ReportPortal_{Section}_{Key}
+        ReportPortal_Server_ApiKey: ${{ secrets.REPORTPORTAL_API_KEY }}
+        ReportPortal_Server_Url: http://localhost:8082 # Note: For real CI, this needs to be an accessible URL, not localhost!
+        # If your ReportPortal is ONLY local, you cannot push results from GitHub Actions.
+        # Assuming for now you might have a public URL or just want the mechanism in place.
+      run: dotnet test TlvWebSite/TlvWebSite.csproj --no-build --verbosity normal

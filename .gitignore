@@ -1,0 +1,14 @@
+# ReportPortal secrets
+**/ReportPortal.json
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Test results
+TestResults/
